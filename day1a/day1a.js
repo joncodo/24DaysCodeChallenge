@@ -1,17 +1,68 @@
 module.exports = {
-  getList: function getList() {
-    var input = "L4, L3, R1, L4, R2, R2, L1, L2, R1, R1, L3, R5, L2, R5, L4, L3, R2, R2, L5, L1, R4, L1, R3, L3, R5, R2, L5, R2, R1, R1, L5, R1, L3, L2, L5, R4, R4, L2, L1, L1, R1, R1, L185, R4, L1, L1, R5, R1, L1, L3, L2, L1, R2, R2, R2, L1, L1, R4, R5, R53, L1, R1, R78, R3, R4, L1, R5, L1, L4, R3, R3, L3, L3, R191, R4, R1, L4, L1, R3, L1, L2, R3, R2, R4, R5, R5, L3, L5, R2, R3, L1, L1, L3, R1, R4, R1, R3, R4, R4, R4, R5, R2, L5, R1, R2, R5, L3, L4, R1, L5, R1, L4, L3, R5, R5, L3, L4, L4, R2, R2, L5, R3, R1, R2, R5, L5, L3, R4, L5, R5, L3, R1, L1, R4, R4, L3, R2, R5, R1, R2, L1, R4, R1, L3, L3, L5, R2, R5, L1, L4, R3, R3, L3, R2, L5, R1, R3, L3, R2, L1, R4, R3, L4, R5, L2, L2, R5, R1, R2, L4, L4, L5, R3, L4";
-
+  getList: function getList(input) {
     var array = input.split(',');
-    return array;
+
+    var objArray = [];
+
+    array.forEach(function (element) {
+
+      objArray.push({
+        direction: element.trim().charAt(0),
+        distance: parseInt(element.trim().substr(1, 4))
+      })
+    })
+
+    return objArray;
   },
 
-  getDistance: function getDistance(list){
-    var length, totalLengthX = 0, totalLengthY=0;
-    list.forEach(function (direction) {
+  getDistance: function getDistance(list) {
+    var length, totalLengthX = 0,
+      totalLengthY = 0,
+      compass = 'north',
+      left = false;
 
-      totalLength += parseInt(direction.charAt(1));
+    list.forEach(function(instruction) {
+      var left = instruction.direction == 'L';
+      var distance = instruction.distance;
+
+
+      if (compass === 'north'){
+        if(left) {
+          compass = 'west'
+          totalLengthX -= distance;
+        } else {
+          compass = 'east'
+          totalLengthX += distance;
+        }
+      } else if(compass === 'east') {
+        if(left) {
+          compass = 'north'
+          totalLengthY += distance;
+
+        } else {
+          compass = 'south'
+          totalLengthY -= distance;
+        }
+      } else if(compass === 'south') {
+        if(left) {
+          compass = 'east'
+          totalLengthX += distance;
+
+        } else {
+          compass = 'west'
+          totalLengthX -= distance;
+        }
+      } else if(compass === 'west') {
+        if(left) {
+          compass = 'south'
+          totalLengthY -= distance;
+        } else {
+          compass = 'north'
+          totalLengthY += distance;
+        }
+      }
     });
-    return totalLengthX + totalLengthY;
+
+    return Math.abs(totalLengthX) + Math.abs(totalLengthY);
   }
 }
